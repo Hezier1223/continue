@@ -29,6 +29,7 @@ import { registerAllPromptFilesCompletionProviders } from "../lang-server/prompt
 import EditDecorationManager from "../quickEdit/EditDecorationManager";
 import { QuickEdit } from "../quickEdit/QuickEditQuickPick";
 import { setupRemoteConfigSync } from "../stubs/activation";
+import { ShihuoAuthProvider } from "../stubs/ShihuoAuthProvider";
 import { UriEventHandler } from "../stubs/uriHandler";
 import {
   getControlPlaneSessionInfo,
@@ -78,6 +79,7 @@ export class VsCodeExtension {
   private core: Core;
   private battery: Battery;
   private workOsAuthProvider: WorkOsAuthProvider;
+  private shihuoAuthProvider: ShihuoAuthProvider;
   private fileSearch: FileSearch;
   private uriHandler = new UriEventHandler();
   private completionProvider: ContinueCompletionProvider;
@@ -173,11 +175,14 @@ export class VsCodeExtension {
   }
 
   constructor(context: vscode.ExtensionContext) {
-    // Register auth provider
+    // Register auth providers
     this.workOsAuthProvider = new WorkOsAuthProvider(context, this.uriHandler);
+    this.shihuoAuthProvider = new ShihuoAuthProvider(context, this.uriHandler);
 
     void this.workOsAuthProvider.refreshSessions();
+    void this.shihuoAuthProvider.refreshSessions();
     context.subscriptions.push(this.workOsAuthProvider);
+    context.subscriptions.push(this.shihuoAuthProvider);
 
     this.editDecorationManager = new EditDecorationManager(context);
 
@@ -281,6 +286,7 @@ export class VsCodeExtension {
       verticalDiffManagerPromise,
       configHandlerPromise,
       this.workOsAuthProvider,
+      this.shihuoAuthProvider,
       this.editDecorationManager,
       context,
       this,

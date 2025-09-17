@@ -91,7 +91,12 @@ export type ToIdeFromWebviewOrCoreProtocol = {
     { silent: boolean; useOnboarding: boolean },
     ControlPlaneSessionInfo | undefined,
   ];
+  getShihuoSessionInfo: [
+    { silent: boolean },
+    ControlPlaneSessionInfo | undefined,
+  ];
   logoutOfControlPlane: [undefined, void];
+  logoutOfShihuo: [undefined, void];
   reportError: [any, void];
   closeSidebar: [undefined, void];
 };

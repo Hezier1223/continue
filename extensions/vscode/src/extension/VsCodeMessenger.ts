@@ -22,6 +22,10 @@ import { VerticalDiffManager } from "../diff/vertical/manager";
 import { addCurrentSelectionToEdit } from "../quickEdit/AddCurrentSelection";
 import EditDecorationManager from "../quickEdit/EditDecorationManager";
 import {
+  getShihuoSessionInfo,
+  ShihuoAuthProvider,
+} from "../stubs/ShihuoAuthProvider";
+import {
   getControlPlaneSessionInfo,
   WorkOsAuthProvider,
 } from "../stubs/WorkOsAuthProvider";
@@ -83,6 +87,7 @@ export class VsCodeMessenger {
     private readonly verticalDiffManagerPromise: Promise<VerticalDiffManager>,
     private readonly configHandlerPromise: Promise<ConfigHandler>,
     private readonly workOsAuthProvider: WorkOsAuthProvider,
+    private readonly shihuoAuthProvider: ShihuoAuthProvider,
     private readonly editDecorationManager: EditDecorationManager,
     private readonly context: vscode.ExtensionContext,
     private readonly vsCodeExtension: VsCodeExtension,
@@ -360,6 +365,9 @@ export class VsCodeMessenger {
         msg.data.useOnboarding,
       );
     });
+    this.onWebviewOrCore("getShihuoSessionInfo", async (msg) => {
+      return getShihuoSessionInfo(msg.data.silent);
+    });
     this.onWebviewOrCore("logoutOfControlPlane", async (msg) => {
       const sessions = await this.workOsAuthProvider.getSessions();
       await Promise.all(
@@ -369,6 +377,12 @@ export class VsCodeMessenger {
         "setContext",
         "continue.isSignedInToControlPlane",
         false,
+      );
+    });
+    this.onWebviewOrCore("logoutOfShihuo", async (msg) => {
+      const sessions = await this.shihuoAuthProvider.getSessions();
+      await Promise.all(
+        sessions.map((session) => shihuoAuthProvider.removeSession(session.id)),
       );
     });
     this.onWebviewOrCore("saveFile", async (msg) => {
