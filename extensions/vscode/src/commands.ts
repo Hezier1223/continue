@@ -458,6 +458,44 @@ const getCommandsMap: (
     ) => {
       completionProvider.accept(completionId);
     },
+    "continue.configureAutocompleteReporting": async () => {
+      const { AutocompleteStatisticsService } = await import(
+        "core/autocomplete/util/AutocompleteStatisticsService"
+      );
+
+      const service = AutocompleteStatisticsService.getInstance();
+      const currentConfig = service.getReportConfig();
+
+      const enabled = await vscode.window.showQuickPick(["Enable", "Disable"], {
+        placeHolder: "Enable or disable reporting?",
+      });
+
+      if (enabled === undefined) return; // User cancelled
+
+      service.configureReporting({
+        enabled: enabled === "Enable",
+      });
+
+      vscode.window.showInformationMessage(
+        `Autocomplete reporting ${enabled.toLowerCase()}d successfully.`,
+      );
+    },
+    "continue.forceAutocompleteReport": async () => {
+      const { AutocompleteStatisticsService } = await import(
+        "core/autocomplete/util/AutocompleteStatisticsService"
+      );
+
+      try {
+        await AutocompleteStatisticsService.getInstance().forceReport();
+        vscode.window.showInformationMessage(
+          "Autocomplete data reported successfully.",
+        );
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          `Failed to report data: ${error instanceof Error ? error.message : error}`,
+        );
+      }
+    },
     "continue.logNextEditOutcomeAccept": (
       completionId: string,
       nextEditLoggingService: NextEditLoggingService,

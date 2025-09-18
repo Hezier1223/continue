@@ -367,6 +367,18 @@
         "category": "Continue",
         "title": "Generate Rule",
         "group": "Continue"
+      },
+      {
+        "command": "continue.configureAutocompleteReporting",
+        "category": "Continue",
+        "title": "Configure Autocomplete Reporting",
+        "group": "Continue"
+      },
+      {
+        "command": "continue.forceAutocompleteReport",
+        "category": "Continue",
+        "title": "Force Autocomplete Report",
+        "group": "Continue"
       }
     ],
     "keybindings": [
@@ -450,6 +462,17 @@
         "when": "editorTextFocus && !editorHasSelection && !editorReadOnly && !inSnippetMode"
       },
       {
+        "command": "continue.showAutocompleteStatistics",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "continue.showAutocompleteStatistics",
+        "key": "f12",
+        "when": "!terminalFocus"
+      },
+      {
         "command": "continue.applyCodeFromChat",
         "mac": "alt+a",
         "key": "alt+a"
@@ -506,6 +529,12 @@
         },
         {
           "command": "continue.generateRule"
+        },
+        {
+          "command": "continue.configureAutocompleteReporting"
+        },
+        {
+          "command": "continue.forceAutocompleteReport"
         }
       ],
       "editor/context": [

@@ -3,6 +3,7 @@ import { COUNT_COMPLETION_REJECTED_AFTER } from "../../util/parameters";
 import { Telemetry } from "../../util/posthog";
 import { getUriFileExtension } from "../../util/uri";
 
+import { AutocompleteStatisticsService } from "./AutocompleteStatisticsService";
 import { AutocompleteOutcome } from "./types";
 
 export class AutocompleteLoggingService {
@@ -12,6 +13,8 @@ export class AutocompleteLoggingService {
   private _outcomes = new Map<string, AutocompleteOutcome>();
   _lastDisplayedCompletion: { id: string; displayedAt: number } | undefined =
     undefined;
+
+  private statisticsService = AutocompleteStatisticsService.getInstance();
 
   public createAbortController(completionId: string): AbortController {
     const abortController = new AbortController();
@@ -41,6 +44,10 @@ export class AutocompleteLoggingService {
       outcome.accepted = true;
       this.logAutocompleteOutcome(outcome);
       this._outcomes.delete(completionId);
+
+      // Track acceptance in statistics service
+      this.statisticsService.trackAccept(completionId);
+
       return outcome;
     }
   }
@@ -53,6 +60,9 @@ export class AutocompleteLoggingService {
 
     if (this._outcomes.has(completionId)) {
       this._outcomes.delete(completionId);
+
+      // Track cancellation in statistics service
+      this.statisticsService.trackCancel(completionId);
     }
   }
 
@@ -62,9 +72,23 @@ export class AutocompleteLoggingService {
       outcome.accepted = false;
       this.logAutocompleteOutcome(outcome);
       this._logRejectionTimeouts.delete(completionId);
+
+      // Track timeout cancellation in statistics service
+      this.statisticsService.trackCancel(completionId);
     }, COUNT_COMPLETION_REJECTED_AFTER);
     this._outcomes.set(completionId, outcome);
     this._logRejectionTimeouts.set(completionId, logRejectionTimeout);
+
+    // Track suggestion display in statistics service
+    this.statisticsService.trackSuggestionDisplayed(
+      completionId,
+      outcome.filepath,
+      getUriFileExtension(outcome.filepath),
+      outcome.modelName,
+      outcome.modelProvider,
+      outcome.completion.length,
+      outcome.prefix.length,
+    );
 
     // If the previously displayed completion is still waiting for rejection,
     // and this one is a continuation of that (the outcome.completion is the same modulo prefix)
