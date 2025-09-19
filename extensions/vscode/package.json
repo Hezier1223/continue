@@ -379,6 +379,12 @@
         "category": "Continue",
         "title": "Force Autocomplete Report",
         "group": "Continue"
+      },
+      {
+        "command": "continue.forceReport",
+        "category": "Continue",
+        "title": "Force Report Manual Typing Data",
+        "group": "Continue"
       }
     ],
     "keybindings": [

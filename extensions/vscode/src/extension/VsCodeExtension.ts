@@ -61,6 +61,7 @@ import {
 import { GhostTextAcceptanceTracker } from "../autocomplete/GhostTextAcceptanceTracker";
 import { getDefinitionsFromLsp } from "../autocomplete/lsp";
 import { handleTextDocumentChange } from "../util/editLoggingUtils";
+import { ManualTypingTracker } from "../util/manualTypingTracker";
 import type { VsCodeWebviewProtocol } from "../webviewProtocol";
 
 export class VsCodeExtension {
@@ -83,6 +84,7 @@ export class VsCodeExtension {
   private fileSearch: FileSearch;
   private uriHandler = new UriEventHandler();
   private completionProvider: ContinueCompletionProvider;
+  private manualTypingTracker: ManualTypingTracker;
 
   private ARBITRARY_TYPING_DELAY = 2000;
 
@@ -369,6 +371,10 @@ export class VsCodeExtension {
         this.completionProvider,
       ),
     );
+
+    // Initialize manual typing tracker
+    this.manualTypingTracker = new ManualTypingTracker();
+    this.manualTypingTracker.initialize(context);
 
     // Handle uri events
     this.uriHandler.event((uri) => {

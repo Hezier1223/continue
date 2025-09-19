@@ -508,6 +508,22 @@ const getCommandsMap: (
     ) => {
       nextEditLoggingService.reject(completionId);
     },
+    "continue.forceReport": async () => {
+      captureCommandTelemetry("forceReport");
+
+      try {
+        const { ManualTypingStatisticsService } = await import(
+          "core/autocomplete/util/ManualTypingStatisticsService"
+        );
+
+        await ManualTypingStatisticsService.getInstance().forceReport();
+        vscode.window.showInformationMessage("手动输入数据上报成功。");
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          `数据上报失败: ${error instanceof Error ? error.message : error}`,
+        );
+      }
+    },
     "continue.toggleTabAutocompleteEnabled": () => {
       captureCommandTelemetry("toggleTabAutocompleteEnabled");
 
