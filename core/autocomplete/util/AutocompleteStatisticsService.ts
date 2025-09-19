@@ -344,6 +344,8 @@ export class AutocompleteStatisticsService {
       console.log(
         `Successfully reported ${allEventsToReport.length} autocomplete events`,
       );
+      // 上报成功后清空统计数据
+      this.resetStatistics();
     } catch (error) {
       console.warn("Failed to report autocomplete data:", error);
       // 将失败的事件加入失败队列，避免与新事件混合
